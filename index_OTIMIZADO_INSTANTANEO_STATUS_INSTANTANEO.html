@@ -1,0 +1,2306 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <script>
+    var logo64n = 'logo';
+    // Variáveis globais para o preenchimento dinâmico de lojas e setores no modal embutido
+    var lojasPadrao = [];
+    var setoresPadrao = ["Açougue", "Frente de Caixa", "Padaria", "Hortifrúti", "Frios", "Depósito", "Gerência", "Salão de Vendas", "Manutenção Geral"];
+  </script>
+
+  <style>
+    :root {
+      --bg-main: #121212;
+      --bg-card: #1e1e1e;
+      --bg-input: #2a2a2a;
+      --primary: #ffc107;
+      --primary-hover: #ffb300;
+      --text-main: #ffffff;
+      --text-sub: #b0b0b0;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --divider-color: rgba(255, 193, 7, 0.12);
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg-main);
+      padding: 24px;
+      color: var(--text-main);
+      font-size: 13px;
+    }
+
+    .topo {
+      background: var(--bg-card);
+      padding: 16px 24px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+      border-left: 5px solid var(--primary);
+    }
+
+    .topo-esquerda {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo {
+      height: 75px;
+      width: auto;
+      object-fit: contain;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+    }
+
+    .titulo-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .titulo {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--text-main);
+      letter-spacing: -0.3px;
+    }
+
+    .subtitulo-ti {
+      font-size: 12px;
+      color: var(--primary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Estilo do Widget de Clima e Hora */
+    .widget-clima-hora {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 10px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+      min-width: 190px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .widget-hora {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--text-main);
+      letter-spacing: 0.5px;
+    }
+
+    .widget-data {
+      font-size: 11px;
+      color: var(--text-sub);
+      text-transform: capitalize;
+    }
+
+    .widget-clima-info {
+      font-size: 12px;
+      color: var(--primary);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 2px;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+      align-items: start;
+    }
+
+    .painelEsquerdo {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .linhaCards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .cardAcao {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      height: 80px;
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cardAcao:hover {
+      background: #252525;
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .cardIndicador {
+      background: var(--bg-card);
+      border-radius: 14px;
+      height: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid var(--border-color);
+    }
+
+    .cardIndicador:hover {
+      background: #252525;
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+
+    .cardIndicador h3 {
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: var(--text-sub);
+    }
+
+    .numero {
+      font-size: 34px;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    .aberto { color: #ff5252; }
+    .pendente { color: var(--primary); }
+    .fechado { color: #66bb6a; }
+    .rejeitado { color: #ab47bc; }
+
+    .cardTecnicos {
+      background: var(--bg-card);
+      padding: 16px;
+      border-radius: 14px;
+      height: 172px;
+      min-height: 172px;
+      max-height: 172px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .cardTecnicos h3 {
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      color: var(--primary);
+    }
+
+    #tecnicosServico,
+    #tecnicosDisponiveis {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 4px;
+    }
+
+    #tecnicosServico div {
+      background: var(--bg-input);
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.3;
+      text-align: left;
+      border-left: 3px solid var(--primary);
+      margin-bottom: 6px;
+    }
+
+    #tecnicosDisponiveis div {
+      padding: 7px 10px;
+      background: var(--bg-input);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      text-align: left;
+      line-height: 1.2;
+      margin-bottom: 5px;
+    }
+
+    .lista {
+      background: var(--bg-card);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-color);
+    }
+
+    .lista h2 { 
+      margin-bottom: 12px; 
+      font-size: 16px;
+      color: var(--text-main);
+    }
+
+    #campoPesquisa {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background: var(--bg-input);
+      color: white;
+      font-size: 13px;
+      margin-bottom: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #campoPesquisa:focus {
+      border-color: var(--primary);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 6px;
+    }
+
+    th {
+      background: var(--bg-input);
+      padding: 12px 10px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-sub);
+      border-bottom: 2px solid var(--primary);
+      border-right: 1px solid var(--divider-color);
+    }
+
+    th:last-child { border-right: none; }
+
+    td {
+      padding: 11px 10px;
+      border-bottom: 1px solid var(--border-color);
+      border-right: 1px solid var(--divider-color);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    td:last-child { border-right: none; }
+
+    tbody tr:hover { background: rgba(255, 193, 7, 0.03); }
+
+    .btnVer {
+      background: #1e88e5 !important;
+      color: white !important;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-block;
+      transition: opacity 0.2s;
+    }
+    .btnVer:hover { opacity: 0.85; }
+
+    .btnTecnico {
+      background: var(--primary) !important;
+      color: #121212 !important;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-block;
+      transition: opacity 0.2s;
+    }
+    .btnTecnico:hover { opacity: 0.85; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 999999 !important;
+      overflow-y: auto;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      width: 90%;
+      max-width: 580px;
+      max-height: 85vh;
+      overflow-y: auto;
+      margin: auto;
+      padding: 22px;
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.9);
+      position: relative;
+      color: white;
+      z-index: 1000000 !important;
+      border: 1px solid var(--border-color);
+    }
+
+    .modal-galeria { max-width: 1050px !important; }
+
+    .grid-galeria {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .card-galeria {
+      background: var(--bg-input);
+      border-radius: 10px;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .card-galeria-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+    }
+
+    .card-galeria-body {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .card-galeria-footer {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .card-galeria-footer button {
+      flex: 1;
+      padding: 6px;
+      font-size: 11px;
+    }
+
+    .fechar {
+      float: right;
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 16px;
+      color: var(--text-sub);
+      transition: color 0.2s;
+    }
+    .fechar:hover { color: var(--text-main); }
+
+    .campo {
+      background: var(--bg-input);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .secaoDatas {
+      background: var(--bg-input);
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .secaoDatas h4 {
+      margin-bottom: 10px;
+      color: var(--primary);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .gridDatas {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .itemData {
+      background: #323232;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      border-left: 3px solid #1e88e5;
+    }
+
+    .itemData small {
+      display: block;
+      color: #aaa;
+      font-size: 10px;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      outline: none;
+      border-radius: 8px;
+      background: var(--bg-input);
+      color: white;
+      margin-top: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+    }
+
+    textarea { height: 110px; resize: none; }
+    .copiar { background: #00c853; color: white; width: 100%; margin-top: 8px; }
+
+    .lista-checkbox {
+      max-height: 130px;
+      overflow-y: auto;
+      background: var(--bg-input);
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .item-check {
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      padding: 4px 0 !important;
+      cursor: pointer !important;
+      font-size: 12px !important;
+      color: white !important;
+    }
+
+    .item-check input[type="checkbox"] {
+      width: 15px !important;
+      height: 15px !important;
+      margin: 0 !important;
+      accent-color: var(--primary);
+      cursor: pointer !important;
+    }
+
+    #listaTecnicos {
+      margin-top: 12px;
+      margin-bottom: 12px;
+      max-height: 250px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .tecnicoItem {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      gap: 12px !important;
+      padding: 10px 14px !important;
+      margin-bottom: 6px !important;
+      background: var(--bg-input) !important;
+      border-radius: 8px !important;
+      cursor: pointer !important;
+      text-align: left !important;
+      font-size: 13px !important;
+      color: white !important;
+      width: 100% !important;
+      border: 1px solid var(--border-color) !important;
+    }
+
+    .tecnicoItem input[type="checkbox"] {
+      width: 16px !important;
+      height: 16px !important;
+      margin: 0 !important;
+      cursor: pointer !important;
+      accent-color: var(--primary);
+      flex-shrink: 0 !important;
+    }
+
+    .tecnicoItem span {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .acoes-modal-detalhes {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-color);
+    }
+    .btnConcluirModal {
+      flex: 1;
+      background: #66bb6a;
+      color: #121212;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 13px;
+      transition: opacity 0.2s;
+    }
+    .btnConcluirModal:hover { opacity: 0.85; }
+
+    .btnReabrirModal {
+      flex: 1;
+      background: #ff5252;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 13px;
+      transition: opacity 0.2s;
+    }
+    .btnReabrirModal:hover { opacity: 0.85; }
+
+    .btnRejeitarModal {
+      flex: 1;
+      background: #ab47bc;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 13px;
+      transition: opacity 0.2s;
+    }
+    .btnRejeitarModal:hover { opacity: 0.85; }
+
+    @media(max-width: 1200px) {
+      .dashboard { grid-template-columns: 1fr; }
+      .linhaCards { grid-template-columns: 1fr; }
+      .cardTecnicos { height: auto; min-height: 180px; }
+      .gridDatas { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 10px !important; }
+      .topo { flex-direction: column !important; text-align: center !important; gap: 12px !important; padding: 12px !important; }
+      .topo-esquerda { flex-direction: column !important; gap: 8px !important; }
+      .widget-clima-hora { align-items: center !important; width: 100% !important; }
+      .logo { height: 60px !important; }
+      .titulo { font-size: 15px !important; }
+      .dashboard { display: flex !important; flex-direction: column !important; gap: 12px !important; }
+      .linhaCards { display: flex !important; flex-direction: column !important; gap: 8px !important; }
+      .cardAcao { height: 50px !important; flex-direction: row !important; justify-content: center !important; font-size: 14px !important; gap: 8px !important; }
+      .cardAcao br { display: none !important; }
+      .cardIndicador { height: 65px !important; }
+      .cardIndicador h3 { font-size: 12px !important; margin-bottom: 2px !important; }
+      .numero { font-size: 26px !important; }
+      .cardTecnicos { height: auto !important; max-height: 220px !important; }
+      .lista { padding: 12px !important; overflow-x: auto !important; }
+      table { display: block !important; overflow-x: auto !important; white-space: nowrap !important; }
+      th, td { padding: 8px 6px !important; font-size: 12px !important; border-right: none !important; }
+      .btnVer, .btnTecnico { padding: 5px 8px !important; font-size: 11px !important; margin: 2px 0 !important; display: block !important; width: 100% !important; }
+      .modal-content { width: 95% !important; padding: 15px !important; max-height: 90vh !important; }
+      .gridDatas { grid-template-columns: 1fr !important; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topo">
+    <div class="topo-esquerda">
+      <img class="logo" id="imgLogo" alt="Logo">
+      <div class="titulo-container">
+        <div class="titulo">SGM • Sistema de Gestão de Manutenção</div>
+        <div class="subtitulo-ti">Desenvolvido por: Setor de Tecnologia da Informação</div>
+      </div>
+    </div>
+    
+    <!-- Widget de Data, Hora e Clima em Tempo Real -->
+    <div class="widget-clima-hora">
+      <div id="widgetHora" class="widget-hora">--:--:--</div>
+      <div id="widgetData" class="widget-data">Carregando data...</div>
+      <div id="widgetClima" class="widget-clima-info">📍 Localizando clima...</div>
+    </div>
+  </div>
+
+  <div class="dashboard">
+    <div class="painelEsquerdo">
+      <div class="linhaCards">
+        <button class="cardAcao" onclick="abrirFiltro()">🗂️<br>FILTRO</button>
+        <button class="cardAcao" onclick="abrirRelatorioMensal()">📊<br>RELATÓRIO</button>
+        <button class="cardAcao" onclick="abrirOS()">📋<br>VER OS</button>
+        <button class="cardAcao" onclick="abrirOSRapida()" style="border-color: #00c853;">🛠️<br>NOVO CHAMADO</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+        <div class="cardIndicador" onclick="abrirGaleriaOS('🔴 ABERTO', 'Ordens de Serviço Abertas')">
+          <h3>🔴 Abertas</h3>
+          <div class="numero aberto" id="abertas">0</div>
+        </div>
+        <div class="cardIndicador" onclick="abrirGaleriaOS('🟡 PENDENTE', 'Ordens de Serviço Pendentes')">
+          <h3>🟡 Pendentes</h3>
+          <div class="numero pendente" id="pendentes">0</div>
+        </div>
+        <div class="cardIndicador" onclick="abrirGaleriaOS('🟢 FECHADO', 'Ordens de Serviço Fechadas')">
+          <h3>🟢 Fechadas</h3>
+          <div class="numero fechado" id="fechadas">0</div>
+        </div>
+        <div class="cardIndicador" onclick="abrirGaleriaOS('🟣 REJEITADO', 'Ordens de Serviço Rejeitadas')">
+          <h3>🟣 Rejeitadas</h3>
+          <div class="numero rejeitado" id="rejeitadas">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cardTecnicos">
+      <h3>👨‍🔧 Em Serviço</h3>
+      <div id="tecnicosServico">Carregando...</div>
+    </div>
+
+    <div class="cardTecnicos">
+      <h3>✅ Disponíveis</h3>
+      <div id="tecnicosDisponiveis">Carregando...</div>
+    </div>
+  </div>
+
+  <div class="lista">
+    <h2>📋 Ordens de Serviço</h2>
+    <input id="campoPesquisa" type="text" placeholder="🔍 Pesquisar OS, Loja, Técnico ou Problema..." onkeyup="pesquisarOS()">
+
+    <table>
+      <thead>
+        <tr>
+          <th>OS</th>
+          <th>Status</th>
+          <th>Data Abertura</th>
+          <th>Loja</th>
+          <th>Técnico</th>
+          <th>Foto (Manutenção)</th>
+          <th>Materiais</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="listaOS">
+        <tr><td colspan="8" style="padding: 30px; color: var(--primary); font-weight: bold;">Carregando ordens de serviço, aguarde...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MODAL GALERIA DE OS -->
+  <div id="modalGaleria" class="modal">
+    <div class="modal-content modal-galeria">
+      <span class="fechar" role="button" tabindex="0" aria-label="Fechar" onclick="fecharModalGaleria()">×</span>
+      <h2 id="tituloModalGaleria" style="margin-bottom:12px; color:var(--primary); font-size:16px;">Galeria de OS</h2>
+      <div id="conteudoGaleria" class="grid-galeria">
+        <div style="text-align:center; padding: 25px; color: #1e88e5; font-weight: bold; grid-column: 1/-1;">Carregando ordens...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE NOVO CHAMADO -->
+  <div id="modalNovoChamado" class="modal">
+    <div class="modal-content" style="max-width: 520px;">
+      <span class="fechar" role="button" tabindex="0" aria-label="Fechar" onclick="fecharModalNovoChamado()">×</span>
+      <h2 style="font-size:16px; color:var(--primary); margin-bottom:14px;">🛠️ Abertura Rápida (Equipe Técnica)</h2>
+      
+      <div style="margin-bottom: 10px;">
+        <label style="font-size:11px; color:var(--text-sub); display:block; margin-bottom:4px; font-weight:bold;">🏪 Loja:</label>
+        <select id="lojaChamado" style="width:100%; padding:10px; border-radius:8px; background:var(--bg-input); color:white; border:1px solid var(--border-color);">
+          <option value="">Carregando lojas...</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label style="font-size:11px; color:var(--text-sub); display:block; margin-bottom:4px; font-weight:bold;">🧩 Setor(es):</label>
+        <div id="listaSetoresChamado" class="lista-checkbox">
+          <div style="color:var(--text-sub); font-size:12px; text-align:center;">Carregando setores...</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label style="font-size:11px; color:var(--text-sub); display:block; margin-bottom:4px; font-weight:bold;">👤 Responsável na Loja:</label>
+        <input type="text" id="responsavelChamado" placeholder="Quem solicitou ou acompanha?" style="width:100%; padding:10px; border-radius:8px; background:var(--bg-input); color:white; border:1px solid var(--border-color);">
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label style="font-size:11px; color:var(--text-sub); display:block; margin-bottom:4px; font-weight:bold;">🖥️ Equipamento:</label>
+        <select id="equipamentoChamado" style="width:100%; padding:10px; border-radius:8px; background:var(--bg-input); color:white; border:1px solid var(--border-color);">
+          <option value="">Selecione o equipamento...</option>
+          <option value="T.I | PDV | COMPUTADOR | CAMERA | IMPRESSORA | ALARME | BALANÇA">T.I | PDV | COMPUTADOR | CAMERA | IMPRESSORA | ALARME | BALANÇA</option>
+          <option value="Moedor de Carne">Moedor de Carne</option>
+          <option value="Serra Fita">Serra Fita</option>
+          <option value="Fritadeira">Fritadeira</option>
+          <option value="Forno">Forno</option>
+          <option value="Câmara Fria">Câmara Fria</option>
+          <option value="Iluminação">Iluminação</option>
+          <option value="Fatiadeira">Fatiadeira</option>
+          <option value="Manutenção Geral">Manutenção Geral</option>
+          <option value="Outro tipo de atendimento">Outro tipo de atendimento</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 14px;">
+        <label style="font-size:11px; color:var(--text-sub); display:block; margin-bottom:4px; font-weight:bold;">📝 Observações / Problema:</label>
+        <textarea id="observacoesChamado" placeholder="Descreva o motivo do chamado de emergência..." style="width:100%; height:80px; padding:10px; border-radius:8px; background:var(--bg-input); color:white; border:1px solid var(--border-color); resize:none;"></textarea>
+      </div>
+
+      <button id="btnEnviarChamado" onclick="enviarOSRapidaPainel()" style="background:var(--primary); color:#121212; width:100%; padding:12px; border-radius:8px; border:none; font-weight:bold; cursor:pointer; font-size:14px;">🚀 Abrir Chamado Agora</button>
+    </div>
+  </div>
+
+  <!-- MODAL DETALHES -->
+  <div id="modalDetalhes" class="modal">
+    <div class="modal-content">
+      <span class="fechar" role="button" tabindex="0" aria-label="Fechar" onclick="fecharModal()">×</span>
+      <h2 id="tituloModalDetalhes" style="margin-bottom:12px; font-size:16px; color:var(--primary);">Detalhes da OS</h2>
+      <div id="conteudoDetalhes"></div>
+      <div id="botoesAcaoDetalhes" class="acoes-modal-detalhes"></div>
+    </div>
+  </div>
+
+  <!-- MODAL CONCLUIR OS PELO PAINEL -->
+  <div id="modalConcluirPainel" class="modal">
+    <div class="modal-content" style="max-width: 480px;">
+      <span class="fechar" role="button" tabindex="0" aria-label="Fechar" onclick="fecharModalConcluirPainel()">×</span>
+      <h2 style="font-size:16px; color:#66bb6a; margin-bottom:12px;">✅ Finalizar Ordem de Serviço</h2>
+      
+      <div style="margin-bottom:10px;">
+        <label style="font-size:11px; color:var(--text-sub); display:block; margin-bottom:6px;">Selecione o(s) Técnico(s) Responsável(is):</label>
+        <div id="listaTecnicosConcluir" style="max-height: 140px; overflow-y: auto; background: var(--bg-input); padding: 8px; border-radius: 8px; border: 1px solid var(--border-color);">
+          <div style="color:var(--text-sub); font-size:12px; text-align:center;">Carregando técnicos...</div>
+        </div>
+      </div>
+      
+      <div style="margin-bottom:10px;">
+        <label style="font-size:11px; color:var(--text-sub);">Manutenção Realizada:</label>
+        <textarea id="concluirManutencao" placeholder="Descreva o serviço feito..." style="height:80px;"></textarea>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <label style="font-size:11px; color:var(--text-sub);">Observações:</label>
+        <textarea id="concluirObs" placeholder="Observações adicionais..." style="height:60px;"></textarea>
+      </div>
+
+      <button id="btnSalvarConclusao" onclick="salvarConclusaoPainel()" style="background:#66bb6a; color:#121212; width:100%; padding:11px; border-radius:8px; border:none; font-weight:bold; cursor:pointer;">Salvar e Concluir OS</button>
+    </div>
+  </div>
+
+  <!-- MODAL RELATÓRIO PROFISSIONAL -->
+  <div id="modalRelatorio" class="modal">
+    <div class="modal-content" style="max-width: 480px;">
+      <span class="fechar" role="button" tabindex="0" aria-label="Fechar" onclick="fecharModalRelatorio()">×</span>
+      <h2 style="margin-bottom:12px; color:var(--primary); font-size:16px;">📊 Gerar Relatório Profissional</h2>
+      <div id="conteudoRelatorio">
+        <div style="margin-bottom: 12px;">
+          <label style="font-size:12px; color:var(--text-sub); display:block; margin-bottom:4px;">🏪 Loja:</label>
+          <select id="relLoja" style="width:100%; padding:9px; border-radius:8px; background:var(--bg-input); color:white; border:1px solid var(--border-color);">
+            <option value="TODAS">Todas as Lojas</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size:12px; color:var(--text-sub); display:block; margin-bottom:4px;">📦 Filtro de Material:</label>
+          <select id="relMaterial" style="width:100%; padding:9px; border-radius:8px; background:var(--bg-input); color:white; border:1px solid var(--border-color);">
+            <option value="AMBOS">Ambos (Com e Sem Material)</option>
+            <option value="COM">Apenas com Material Usado</option>
+            <option value="SEM">Apenas sem Material Usado</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <label style="font-size:12px; color:var(--text-sub); display:block; margin-bottom:4px;">⏳ Tipo de Período:</label>
+          <select id="relTipoPeriodo" onchange="alternarCamposPeriodo()" style="width:100%; padding:9px; border-radius:8px; background:var(--bg-input); color:white; border:1px solid var(--border-color);">
+            <option value="mes">Mês Específico</option>
+            <option value="semana">Semana Específica</option>
+            <option value="personalizado">Data Personalizada (Início e Fim)</option>
+          </select>
+        </div>
+
+        <div id="blocoMes" style="display:grid; grid-template-columns: 2fr 1fr; gap:8px; margin-bottom: 12px;">
+          <div>
+            <label style="font-size:11px; color:var(--text-sub);">Mês:</label>
+            <select id="relMes" style="width:100%; padding:9px; border-radius:8px; background:var(--bg-input); color:white; border:1px solid var(--border-color);">
+              <option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option>
+              <option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option>
+              <option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option>
+              <option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px; color:var(--text-sub);">Ano:</label>
+            <input type="number" id="relAnoMes" value="2026" style="width:100%; padding:9px; border-radius:8px; background:var(--bg-input); color:white; border:1px solid var(--border-color); text-align:center;">
+          </div>
+        </div>
+
+        <div id="blocoSemana" style="display:none; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom: 12px;">
+          <div>
+            <label style="font-size:11px; color:var(--text-sub);">Número da Semana:</label>
+            <input type="number" id="relNumSemana" placeholder="Ex: 25" min="1" max="53" style="width:100%; padding:9px; border-radius:8px; background:var(--bg-input); color:white; border:1px solid var(--border-color); text-align:center;">
+          </div>
+          <div>
+            <label style="font-size:11px; color:var(--text-sub);">Ano:</label>
+            <input type="number" id="relAnoSemana" value="2026" style="width:100%; padding:9px; border-radius:8px; background:var(--bg-input); color:white; border:1px solid var(--border-color); text-align:center;">
+          </div>
+        </div>
+
+        <div id="blocoPersonalizado" style="display:none; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom: 12px;">
+          <div>
+            <label style="font-size:11px; color:var(--text-sub);">Data Início:</label>
+            <input type="date" id="relDataInicio" style="width:100%; padding:9px; border-radius:8px; background:var(--bg-input); color:white; border:1px solid var(--border-color);">
+          </div>
+          <div>
+            <label style="font-size:11px; color:var(--text-sub);">Data Fim:</label>
+            <input type="date" id="relDataFim" style="width:100%; padding:9px; border-radius:8px; background:var(--bg-input); color:white; border:1px solid var(--border-color);">
+          </div>
+        </div>
+
+        <button onclick="gerarRelatorio()" style="background:#00c853; color:white; width:100%; padding:11px; border-radius:8px; border:none; font-weight:bold; cursor:pointer; margin-top:8px;">Gerar Relatório em PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL TÉCNICOS -->
+  <div id="modalTecnico" class="modal">
+    <div class="modal-content" style="max-width: 450px; width: 95%;">
+      <span class="fechar" role="button" tabindex="0" aria-label="Fechar" onclick="fecharModalTecnico()">×</span>
+      <h2 style="font-size:16px; color:var(--primary);">👨‍🔧 Designar Técnico</h2>
+      <p style="margin:10px 0 14px 0; color:var(--text-sub); font-size:13px;">Selecione um ou mais técnicos:</p>
+      
+      <div id="listaTecnicos"></div>
+      
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+        <button onclick="fecharModalTecnico()" style="background:#444; color:white; padding:8px 14px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; font-size:12px;">Cancelar</button>
+        <button class="btnTecnico" onclick="salvarTecnico()">👨‍🔧 Designar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MENSAGEM -->
+  <div id="modalMensagem" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+      <span class="fechar" role="button" tabindex="0" aria-label="Fechar" onclick="fecharModalMensagem()">×</span>
+      <h2 style="font-size:16px; color:#00c853;">✅ Ordem de Serviço Designada</h2>
+      <textarea id="textoCopiar" readonly style="height:220px; margin-top: 12px; font-size:12px;"></textarea>
+      <button class="copiar" onclick="copiarTexto()" style="padding:10px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; font-size:13px;">📋 Copiar Mensagem</button>
+    </div>
+  </div>
+
+  <!-- MODAL IMAGEM -->
+  <div id="modalImagem" class="modal">
+    <div class="modal-content" style="max-width:850px; text-align:center;">
+      <span class="fechar" role="button" tabindex="0" aria-label="Fechar" onclick="fecharImagem()">×</span>
+      <img id="imagemAmpliada" style="width:100%; border-radius:8px; margin-top:10px;">
+    </div>
+  </div>
+
+  <script>
+    var osAtual = "";
+    var filtroAtual = "";
+    var autoRefreshTimer = null;
+    var estaAtualizando = false;
+    var osDetalheAtual = null;
+
+    // Cache Global na memória do navegador para cliques instantâneos e prevenção de timeouts
+    var cacheOSGlobal = [];
+
+    // Helpers de segurança e normalização para conteúdo vindo de Sheets/APIs.
+    // Mantêm a renderização atual, mas evitam que dados externos sejam interpretados como HTML/JS.
+    function escaparHTML(valor) {
+      if (valor === null || valor === undefined) return "";
+      return String(valor)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function escaparJSString(valor) {
+      return encodeURIComponent(valor === null || valor === undefined ? "" : String(valor));
+    }
+
+    function decodificarJSString(valorCodificado) {
+      try { return decodeURIComponent(valorCodificado || ""); } catch (e) { return String(valorCodificado || ""); }
+    }
+
+    function urlImagemSegura(url) {
+      var link = (url === null || url === undefined) ? "" : String(url).trim();
+      if (!link) return "";
+      if (/^https:\/\//i.test(link) || /^data:image\//i.test(link)) return link;
+      return "";
+    }
+
+    function valorTexto(valor, fallback) {
+      if (valor === null || valor === undefined || String(valor).trim() === "") return fallback || "";
+      return String(valor);
+    }
+
+    function obterListaOSFiltrada() {
+      var lista = Array.isArray(cacheOSGlobal) ? cacheOSGlobal.slice() : [];
+      var campo = document.getElementById("campoPesquisa");
+      var texto = campo ? campo.value.trim().toLowerCase() : "";
+
+      if (filtroAtual) {
+        var stClean = filtroAtual.replace(/[🔴🟡🟢🟣]\s*/, "").toUpperCase();
+        lista = lista.filter(function(o) {
+          return (o.status || "").toUpperCase().includes(stClean);
+        });
+      }
+
+      if (texto) {
+        lista = lista.filter(function(os) {
+          var str = [
+            os.os,
+            os.status,
+            os.loja,
+            os.tecnico,
+            os.equipamento,
+            os.problema,
+            os.setor,
+            os.responsavel,
+            os.materiais,
+            os.observacoesManutencao,
+            os.observacoes
+          ].map(function(v) { return v || ""; }).join(" ").toLowerCase();
+          return str.includes(texto);
+        });
+      }
+
+      return lista;
+    }
+
+    function carregarLogo() {
+      var img = document.getElementById("imgLogo");
+      if (typeof logo64n !== 'undefined' && logo64n && logo64n !== 'COLE_AQUI_SUA_STRING_BASE64_GIGANTE') {
+        var str = logo64n.replace(/\s/g, '');
+        if (!str.startsWith('data:image')) {
+          str = 'data:image/png;base64,' + str;
+        }
+        img.src = str;
+      } else {
+        img.style.display = "none";
+      }
+    }
+
+    // Inicializador do Relógio e Clima em Tempo Real
+    function iniciarWidgetTempoReal() {
+      atualizarRelogio();
+      setInterval(atualizarRelogio, 1000);
+      buscarClimaLocalizacao();
+    }
+
+    function atualizarRelogio() {
+      var agora = new Date();
+      var horas = String(agora.getHours()).padStart(2, '0');
+      var minutos = String(agora.getMinutes()).padStart(2, '0');
+      var segundos = String(agora.getSeconds()).padStart(2, '0');
+      document.getElementById("widgetHora").innerText = horas + ":" + minutos + ":" + segundos;
+
+      var opcoesData = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+      var dataFormatada = agora.toLocaleDateString('pt-BR', opcoesData);
+      document.getElementById("widgetData").innerText = dataFormatada;
+    }
+
+    function buscarClimaLocalizacao() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(posicao) {
+          var lat = posicao.coords.latitude;
+          var lon = posicao.coords.longitude;
+          obterClimaAPI(lat, lon);
+        }, function(erro) {
+          obterClimaAPI(-25.4284, -49.2733, "Piraquara / Curitiba");
+        }, { timeout: 10000 });
+      } else {
+        obterClimaAPI(-25.4284, -49.2733, "Piraquara / Curitiba");
+      }
+    }
+
+    function obterClimaAPI(lat, lon, nomeLocalPadrao) {
+      var urlGeo = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + lat + "&lon=" + lon;
+
+      fetch(urlGeo)
+        .then(function(res) { return res.json(); })
+        .then(function(dadosGeo) {
+          var cidade = dadosGeo.address.city || dadosGeo.address.town || dadosGeo.address.municipality || dadosGeo.address.village || "Local";
+          requisitarOpenMeteo(lat, lon, cidade);
+        })
+        .catch(function() {
+          requisitarOpenMeteo(lat, lon, nomeLocalPadrao || "Clima Atual");
+        });
+    }
+
+    function requisitarOpenMeteo(lat, lon, nomeCidade) {
+      var url = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon + "&current=temperature_2m,weather_code";
+      fetch(url)
+        .then(function(res) { return res.json(); })
+        .then(function(dados) {
+          if (dados && dados.current) {
+            var temp = Math.round(dados.current.temperature_2m);
+            var codigoWMO = dados.current.weather_code;
+            var textoClima = traduzirCodigoClima(codigoWMO);
+            document.getElementById("widgetClima").innerHTML = "📍 " + nomeCidade + " • " + temp + "°C, " + textoClima;
+          }
+        })
+        .catch(function() {
+          document.getElementById("widgetClima").innerHTML = "📍 Clima indisponível";
+        });
+    }
+
+    function traduzirCodigoClima(codigo) {
+      if (codigo === 0) return "Céu limpo ☀️";
+      if (codigo >= 1 && codigo <= 3) return "Parcialmente nublado ⛅";
+      if (codigo >= 45 && codigo <= 48) return "Nevoeiro 🌫️";
+      if (codigo >= 51 && codigo <= 67) return "Chuva 🌧️";
+      if (codigo >= 71 && codigo <= 77) return "Neve ❄️";
+      if (codigo >= 80 && codigo <= 82) return "Pancadas de chuva 🌦️";
+      if (codigo >= 95 && codigo <= 99) return "Tempestade ⛈️";
+      return "Bom 🌤️";
+    }
+
+    function obterLinkDriveThumbnail(url) {
+      if (!url) return "";
+      var link = url.toString().trim();
+      var id = "";
+      if (link.indexOf("/d/") > -1) {
+        id = link.split("/d/")[1].split("/")[0];
+      } else if (link.indexOf("id=") > -1) {
+        id = link.split("id=")[1].split("&")[0];
+      }
+      if (id) {
+        return "https://drive.google.com/thumbnail?id=" + id + "&sz=w1000";
+      }
+      return link;
+    }
+
+    function carregarLojasGlobais() {
+      if (typeof google !== "undefined" && google.script && google.script.run) {
+        google.script.run.withSuccessHandler(function(lojas) {
+          if (lojas && lojas.length > 0) {
+            lojasPadrao = lojas;
+          }
+        }).listarLojas();
+      }
+    }
+
+    // Abertura de galeria instantânea lendo diretamente da memória do navegador (Cache)
+    function abrirGaleriaOS(statusFiltro, tituloModal) {
+      pausarAutoRefresh();
+      document.getElementById("tituloModalGaleria").innerHTML = "📁 " + tituloModal;
+      document.getElementById("conteudoGaleria").innerHTML = "<div style='text-align:center; padding: 25px; color: #1e88e5; font-weight: bold; grid-column: 1/-1;'>Carregando ordens...</div>";
+      document.getElementById("modalGaleria").style.display = "flex";
+
+      var statusTexto = statusFiltro.replace(/[🔴🟡🟢🟣]\s*/, "").toUpperCase();
+      var listaFiltrada = cacheOSGlobal.filter(function(os) {
+        var st = (os.status || "").toUpperCase();
+        return st.includes(statusTexto);
+      });
+
+      renderizarGridGaleria(listaFiltrada);
+    }
+
+    function renderizarGridGaleria(lista) {
+      var html = "";
+      if (lista && lista.length > 0) {
+        lista.forEach(function (os) {
+          var osEncoded = escaparJSString(os.os);
+          var problema = valorTexto(os.problema, "-");
+          if (problema.length > 70) problema = problema.substring(0, 70) + "...";
+
+          html += '<div class="card-galeria">' +
+            '<div class="card-galeria-header">' +
+            '<span>' + escaparHTML(os.os) + '</span>' +
+            '<span style="font-size:11px; color:var(--primary);">' + escaparHTML(os.status) + '</span>' +
+            '</div>' +
+            '<div class="card-galeria-body">' +
+            '<div>🏪 <b>Loja:</b> ' + escaparHTML(valorTexto(os.loja, "-")) + '</div>' +
+            '<div>🧩 <b>Setor:</b> ' + escaparHTML(valorTexto(os.setor, "-")) + '</div>' +
+            '<div>🖥️ <b>Equipamento:</b> ' + escaparHTML(valorTexto(os.equipamento, "-")) + '</div>' +
+            '<div>👨‍🔧 <b>Técnico:</b> ' + escaparHTML(valorTexto(os.tecnico, "Não designado")) + '</div>' +
+            '<div style="margin-top:4px;">⚠️ <b>Problema:</b> ' + escaparHTML(problema) + '</div>' +
+            '</div>' +
+            '<div class="card-galeria-footer">' +
+            '<button class="btnVer" onclick="fecharModalGaleria(); verDetalhes(decodificarJSString(\'' + osEncoded + '\'))">🔍 Ver</button>' +
+            '<button class="btnTecnico" onclick="fecharModalGaleria(); abrirDesignacao(decodificarJSString(\'' + osEncoded + '\'))">👨‍🔧 Técnico</button>' +
+            '</div>' +
+            '</div>';
+        });
+      } else {
+        html = "<p style='text-align:center; padding:25px; color:var(--text-sub); grid-column: 1/-1;'>Nenhuma ordem encontrada com este status.</p>";
+      }
+      document.getElementById("conteudoGaleria").innerHTML = html;
+    }
+
+    function fecharModalGaleria() {
+      document.getElementById("modalGaleria").style.display = "none";
+      iniciarAutoRefresh();
+    }
+
+    function abrirRelatorioMensal() {
+      pausarAutoRefresh();
+      document.getElementById("modalRelatorio").style.display = "flex";
+      
+      var anoAtual = new Date().getFullYear();
+      document.getElementById("relAnoMes").value = anoAtual;
+      document.getElementById("relAnoSemana").value = anoAtual;
+      
+      if (typeof google !== "undefined" && google.script && google.script.run) {
+        google.script.run.withSuccessHandler(function(lojas) {
+          var selectLoja = document.getElementById("relLoja");
+          var htmlOpcoes = '<option value="TODAS">Todas as Lojas</option>';
+          if (lojas && lojas.length > 0) {
+            lojas.forEach(function(l) {
+              htmlOpcoes += '<option value="' + escaparHTML(l) + '">' + escaparHTML(l) + '</option>';
+            });
+          }
+          selectLoja.innerHTML = htmlOpcoes;
+        }).listarLojas();
+      }
+    }
+
+    function alternarCamposPeriodo() {
+      var tipo = document.getElementById("relTipoPeriodo").value;
+      document.getElementById("blocoMes").style.display = (tipo === "mes") ? "grid" : "none";
+      document.getElementById("blocoSemana").style.display = (tipo === "semana") ? "grid" : "none";
+      document.getElementById("blocoPersonalizado").style.display = (tipo === "personalizado") ? "grid" : "none";
+    }
+
+    function fecharModalRelatorio() {
+      document.getElementById("modalRelatorio").style.display = "none";
+      iniciarAutoRefresh();
+    }
+
+    function gerarRelatorio() {
+      var loja = document.getElementById("relLoja").value;
+      var material = document.getElementById("relMaterial").value;
+      var tipoPeriodo = document.getElementById("relTipoPeriodo").value;
+      
+      var mes = "", ano = "", semana = "", dataInicio = "", dataFim = "";
+
+      if (tipoPeriodo === "mes") {
+        mes = document.getElementById("relMes").value;
+        ano = document.getElementById("relAnoMes").value;
+      } else if (tipoPeriodo === "semana") {
+        semana = document.getElementById("relNumSemana").value;
+        ano = document.getElementById("relAnoSemana").value;
+        if (!semana) { alert("Informe o número da semana."); return; }
+      } else if (tipoPeriodo === "personalizado") {
+        dataInicio = document.getElementById("relDataInicio").value;
+        dataFim = document.getElementById("relDataFim").value;
+        if (!dataInicio || !dataFim) { alert("Informe a data de início e a data de fim."); return; }
+        if (dataFim < dataInicio) { alert("A data de fim não pode ser anterior à data de início."); return; }
+      }
+
+      fecharModalRelatorio();
+      alert("Gerando o relatório PDF profissional, aguarde um instante...");
+
+      google.script.run
+        .withSuccessHandler(function (urlPDF) {
+          if (urlPDF) window.open(urlPDF, "_blank");
+          else alert("Relatório gerado, mas a URL não pôde ser aberta.");
+        })
+        .withFailureHandler(function (err) { alert("Erro ao gerar relatório: " + err.message); })
+        .gerarRelatorioMensal(mes, ano, loja, material, tipoPeriodo, semana, dataInicio, dataFim);
+    }
+
+    function abrirFiltro() {
+      var filtro = prompt("Escolha um filtro:\n\n1 - Todas\n2 - Abertas\n3 - Pendentes\n4 - Fechadas\n5 - Rejeitadas");
+      if (filtro == null) return;
+      var status = "";
+      switch (filtro) {
+        case "1": status = ""; break;
+        case "2": status = "🔴 ABERTO"; break;
+        case "3": status = "🟡 PENDENTE"; break;
+        case "4": status = "🟢 FECHADO"; break;
+        case "5": status = "🟣 REJEITADO"; break;
+        default: alert("Filtro inválido."); return;
+      }
+      filtroAtual = status;
+      
+      renderizarTabelaOS(obterListaOSFiltrada());
+    }
+
+    function abrirOS() {
+      var texto = "Digite o número da OS:\n\n";
+      if (cacheOSGlobal && cacheOSGlobal.length) {
+        cacheOSGlobal.forEach(function (item) { texto += item.os + " - " + item.status + "\n"; });
+      }
+      var numero = prompt(texto);
+      if (!numero) return;
+
+      google.script.run.withSuccessHandler(function (htmlConteudo) {
+        if (htmlConteudo) {
+          var w = window.open("", "_blank");
+          w.document.write(htmlConteudo);
+          w.document.close();
+        } else {
+          alert("Não foi possível gerar a Ordem de Serviço.");
+        }
+      }).gerarRelatorioOSHTML(numero);
+    }
+
+    function carregarTecnicosStatus() {
+      google.script.run.withSuccessHandler(function (dados) {
+        var htmlServico = "";
+        var htmlDisponivel = "";
+        if (dados && dados.emServico) {
+          dados.emServico.forEach(function (t) {
+            htmlServico += '<div>🟡 <b>' + escaparHTML(t.tecnico) + '</b><br>' + escaparHTML(t.os) + '<br>' + escaparHTML(t.loja) + '</div>';
+          });
+        }
+        if (dados && dados.disponiveis) {
+          dados.disponiveis.forEach(function (nome) {
+            htmlDisponivel += '<div>🟢 ' + escaparHTML(nome) + '</div>';
+          });
+        }
+        document.getElementById("tecnicosServico").innerHTML = htmlServico || "Nenhum técnico em atendimento";
+        document.getElementById("tecnicosDisponiveis").innerHTML = htmlDisponivel || "Nenhum técnico disponível";
+      }).listarTecnicosStatus();
+    }
+
+    function abrirOSRapida() {
+      pausarAutoRefresh();
+      
+      var htmlSetores = "";
+      setoresPadrao.forEach(function(s) {
+        htmlSetores += '<label class="item-check"><input type="checkbox" class="checkSetorChamado" value="' + s + '"> <span>' + s + '</span></label>';
+      });
+      document.getElementById("listaSetoresChamado").innerHTML = htmlSetores;
+
+      var selectLoja = document.getElementById("lojaChamado");
+      var htmlLojas = '<option value="">Selecione a Loja...</option>';
+      lojasPadrao.forEach(function(l) { htmlLojas += '<option value="' + escaparHTML(l) + '">' + escaparHTML(l) + '</option>'; });
+      selectLoja.innerHTML = htmlLojas;
+
+      document.getElementById("responsavelChamado").value = "";
+      document.getElementById("equipamentoChamado").value = "";
+      document.getElementById("observacoesChamado").value = "";
+
+      document.getElementById("modalNovoChamado").style.display = "flex";
+    }
+
+    function fecharModalNovoChamado() {
+      document.getElementById("modalNovoChamado").style.display = "none";
+      iniciarAutoRefresh();
+    }
+
+    function enviarOSRapidaPainel() {
+      var loja = document.getElementById("lojaChamado").value;
+      var checks = document.querySelectorAll(".checkSetorChamado:checked");
+      var setoresArr = [];
+      checks.forEach(function(c) { setoresArr.push(c.value); });
+      var setor = setoresArr.join(", ");
+      var responsavel = document.getElementById("responsavelChamado").value.trim();
+      var equipamento = document.getElementById("equipamentoChamado").value;
+      var observacoes = document.getElementById("observacoesChamado").value.trim();
+
+      if (!loja || setoresArr.length === 0 || !equipamento || !observacoes) {
+        alert("Por favor, selecione a Loja, pelo menos um Setor, o Equipamento e preencha as Observações.");
+        return;
+      }
+
+      var dados = { loja: loja, setor: setor, responsavel: responsavel || "Técnico", equipamento: equipamento, observacoes: observacoes };
+      var btn = document.getElementById("btnEnviarChamado");
+      btn.disabled = true;
+      btn.innerText = "Salvando chamado...";
+
+      google.script.run
+        .withSuccessHandler(function(numOS) {
+          alert("✅ OS Nº " + numOS + " aberta com sucesso!");
+          fecharModalNovoChamado();
+          btn.disabled = false;
+          btn.innerText = "🚀 Abrir Chamado Agora";
+          sincronizarDadosEmSegundoPlano();
+        })
+        .withFailureHandler(function(err) {
+          alert("Erro ao abrir OS: " + (err.message || err));
+          btn.disabled = false;
+          btn.innerText = "🚀 Abrir Chamado Agora";
+        })
+        .abrirOSRapidaTecnico(dados);
+    }
+
+    function renderizarTabelaOS(lista) {
+      var tabela = "";
+      if (lista && lista.length) {
+        lista.forEach(function (os) {
+          function fotoValida(str) {
+            if (!str) return false;
+            var txt = str.toString().trim().toLowerCase();
+            return !(txt === "" || txt === "não" || txt === "nao" || txt === "-" || txt === "null" || txt === "undefined" || txt === "[]");
+          }
+          function materialValido(str) {
+            if (!str) return false;
+            var txt = str.toString().trim().toLowerCase();
+            return !(txt === "" || txt === "não" || txt === "nao" || txt === "não utilizado" || txt === "nao utilizado" || txt === "nenhum" || txt === "-");
+          }
+
+          var temFotoManutencao = Array.isArray(os.fotosManutencao) ? os.fotosManutencao.some(fotoValida) : (os.fotosManutencao && os.fotosManutencao.toString().split("\n").some(fotoValida));
+          var temMaterial = materialValido(os.materiais);
+          var osEncoded = escaparJSString(os.os);
+
+          tabela += '<tr>' +
+            '<td>' + escaparHTML(os.os) + '</td>' +
+            '<td>' + escaparHTML(os.status) + '</td>' +
+            '<td>' + escaparHTML(valorTexto(os.dataAbertura, "-")) + '</td>' +
+            '<td>' + escaparHTML(valorTexto(os.loja, "-")) + '</td>' +
+            '<td>' + escaparHTML(valorTexto(os.tecnico, "-")) + '</td>' +
+            '<td>' + (temFotoManutencao ? "📸 Sim" : "❌ Não") + '</td>' +
+            '<td>' + (temMaterial ? "📦 Sim" : "❌ Não") + '</td>' +
+            '<td>' +
+            '<button class="btnVer" onclick="verDetalhes(decodificarJSString(\'' + osEncoded + '\'))">🔍 Ver</button> ' +
+            '<button class="btnTecnico" onclick="abrirDesignacao(decodificarJSString(\'' + osEncoded + '\'))">👨‍🔧 Técnico</button>' +
+            '</td>' +
+            '</tr>';
+        });
+      } else {
+        tabela = '<tr><td colspan="8" style="padding: 25px; color: var(--text-sub);">Nenhuma Ordem de Serviço encontrada.</td></tr>';
+      }
+      document.getElementById("listaOS").innerHTML = tabela;
+    }
+
+    // Sincronização em segundo plano blindada contra concorrência e travamentos do Apps Script
+    function sincronizarDadosEmSegundoPlano() {
+      if (estaAtualizando) return;
+      estaAtualizando = true;
+
+      google.script.run.withSuccessHandler(function (dados) {
+        if (dados) {
+          document.getElementById("abertas").innerHTML = dados.abertas || 0;
+          document.getElementById("pendentes").innerHTML = dados.pendentes || 0;
+          document.getElementById("fechadas").innerHTML = dados.fechadas || 0;
+          document.getElementById("rejeitadas").innerHTML = dados.rejeitadas || 0;
+        }
+      }).withFailureHandler(function() {}).buscarResumoOS();
+
+      google.script.run
+        .withSuccessHandler(function (lista) {
+          if (lista) {
+            // A listagem já traz os dados completos. Mantemos tudo em memória
+            // e sincronizamos o cache persistente em segundo plano.
+            cacheOSGlobal = lista;
+            renderizarTabelaOS(obterListaOSFiltrada());
+            atualizarCacheDetalhesEmLote(lista);
+          }
+          estaAtualizando = false;
+        })
+        .withFailureHandler(function() {
+          estaAtualizando = false;
+        })
+        .listarOSPainel("");
+
+      carregarTecnicosStatus();
+    }
+
+    // Detalhes instantâneos puxando direto do Cache Local do navegador
+    function atualizarCacheDetalhesEmLote(lista) {
+      if (!Array.isArray(lista) || !lista.length) return;
+
+      // O servidor agora devolve os detalhes junto da listagem. Copiamos
+      // gradualmente para localStorage para não travar a thread da interface.
+      var fila = lista.slice();
+      var pos = 0;
+
+      function processarLote() {
+        var limite = Math.min(pos + 8, fila.length);
+        for (; pos < limite; pos++) {
+          var os = fila[pos];
+          if (!os || !os.os || !os._cacheCompleto) continue;
+          salvarDetalheOSCache(os.os, os);
+        }
+        if (pos < fila.length) {
+          setTimeout(processarLote, 0);
+        }
+      }
+
+      setTimeout(processarLote, 0);
+    }
+
+    function obterChaveCacheOS(numero) {
+      return "sgm_os_detalhe_v2_" + String(numero || "").trim().toLowerCase();
+    }
+
+    function lerDetalheOSCache(numero) {
+      var chave = obterChaveCacheOS(numero);
+      try {
+        var memoria = window.__sgmDetalhesCache || {};
+        if (memoria[chave]) return memoria[chave];
+
+        var bruto = localStorage.getItem(chave);
+        if (!bruto) return null;
+
+        var obj = JSON.parse(bruto);
+        if (!obj || !obj.dados) return null;
+
+        window.__sgmDetalhesCache = memoria;
+        memoria[chave] = obj;
+        return obj;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function salvarDetalheOSCache(numero, dados) {
+      if (!numero || !dados) return;
+      var chave = obterChaveCacheOS(numero);
+      var pacote = { atualizadoEm: Date.now(), dados: dados };
+
+      try {
+        window.__sgmDetalhesCache = window.__sgmDetalhesCache || {};
+        window.__sgmDetalhesCache[chave] = pacote;
+      } catch (e) {}
+
+      try {
+        localStorage.setItem(chave, JSON.stringify(pacote));
+      } catch (e) {
+        // Se o localStorage estiver cheio, mantém ao menos o cache em memória.
+      }
+    }
+
+    function invalidarDetalheOSCache(numero) {
+      if (!numero) return;
+      var chave = obterChaveCacheOS(numero);
+      try {
+        if (window.__sgmDetalhesCache) delete window.__sgmDetalhesCache[chave];
+      } catch (e) {}
+      try {
+        localStorage.removeItem(chave);
+      } catch (e) {}
+    }
+
+    // Atualiza imediatamente o estado local após uma ação que alterou a OS.
+    // Assim a próxima abertura não depende de esperar o próximo refresh.
+    function atualizarStatusLocalOS(numero, novoStatus) {
+      if (!numero || !novoStatus) return;
+
+      for (var i = 0; i < cacheOSGlobal.length; i++) {
+        var item = cacheOSGlobal[i];
+        if (!item) continue;
+        var a = String(item.os || '').trim().toLowerCase();
+        var b = String(numero || '').trim().toLowerCase();
+        var ad = a.replace(/\D/g, '');
+        var bd = b.replace(/\D/g, '');
+        if (a === b || (ad && bd && ad === bd)) {
+          item.status = novoStatus;
+          break;
+        }
+      }
+
+      var pacote = lerDetalheOSCache(numero);
+      if (pacote && pacote.dados) {
+        pacote.dados.status = novoStatus;
+        pacote.atualizadoEm = Date.now();
+        salvarDetalheOSCache(numero, pacote.dados);
+      }
+    }
+
+    function obterOSResumoCache(numero) {
+      var alvo = String(numero || "").trim().toLowerCase();
+      if (!alvo) return null;
+
+      for (var i = 0; i < cacheOSGlobal.length; i++) {
+        var os = cacheOSGlobal[i];
+        if (!os) continue;
+
+        var atual = String(os.os || "").trim().toLowerCase();
+        var atualLimpo = atual.replace(/\D/g, "");
+        var alvoLimpo = alvo.replace(/\D/g, "");
+
+        if (atual === alvo || (alvoLimpo && atualLimpo === alvoLimpo)) {
+          return os;
+        }
+      }
+      return null;
+    }
+
+    function renderizarCarregamentoDetalhes(conteudo, mensagem) {
+      if (!conteudo) return;
+      conteudo.innerHTML =
+        "<div style='text-align:center; padding:25px; color:#1e88e5; font-weight:bold;'>" +
+        escaparHTML(mensagem || "Carregando detalhes da OS...") +
+        "</div>";
+    }
+
+    // Abertura otimista: mostra imediatamente o cache local/resumo e atualiza
+    // o detalhe completo em segundo plano. Isso elimina a sensação de "espera"
+    // ao fechar e abrir a mesma OS novamente.
+    function verDetalhes(numero) {
+      pausarAutoRefresh();
+      osDetalheAtual = numero;
+
+      var titulo = document.getElementById("tituloModalDetalhes");
+      var conteudo = document.getElementById("conteudoDetalhes");
+      var botoes = document.getElementById("botoesAcaoDetalhes");
+      var modal = document.getElementById("modalDetalhes");
+
+      if (titulo) titulo.textContent = "Detalhes da OS " + numero;
+      if (botoes) botoes.innerHTML = "";
+      if (modal) modal.style.display = "flex";
+
+      var pacoteCache = lerDetalheOSCache(numero);
+      var resumo = obterOSResumoCache(numero);
+      var dadosIniciais = pacoteCache && pacoteCache.dados ? pacoteCache.dados : resumo;
+
+      var cachePrecisaAtualizar = true;
+
+      if (dadosIniciais) {
+        preencherHtmlDetalhesOS(dadosIniciais);
+
+        // Se a listagem já recebeu um status mais novo que o detalhe em cache,
+        // força a atualização imediatamente. Caso contrário, o cache recente
+        // continua sendo usado para abrir a OS sem espera.
+        var statusCache = String(dadosIniciais.status || '').trim().toLowerCase();
+        var statusResumo = resumo ? String(resumo.status || '').trim().toLowerCase() : '';
+        var statusDivergente = !!(statusResumo && statusCache && statusResumo !== statusCache);
+        var idade = pacoteCache ? (Date.now() - Number(pacoteCache.atualizadoEm || 0)) : Infinity;
+        cachePrecisaAtualizar = statusDivergente || idade >= 60000 || !pacoteCache;
+
+        if (!cachePrecisaAtualizar) return;
+      } else {
+        renderizarCarregamentoDetalhes(conteudo, "Carregando detalhes da OS...");
+      }
+
+      // Sempre atualiza quando não há cache completo ou quando ele ficou antigo,
+      // mas a interface já está aberta e utilizável.
+      google.script.run
+        .withSuccessHandler(function(osRemota) {
+          if (!osRemota) {
+            if (!dadosIniciais && conteudo) {
+              conteudo.innerHTML =
+                "<p style='color:#ff5252; text-align:center;'>OS não encontrada.</p>";
+            }
+            return;
+          }
+
+          salvarDetalheOSCache(numero, osRemota);
+
+          // Só troca o conteúdo se o usuário ainda estiver olhando esta OS.
+          if (String(osDetalheAtual || "") === String(numero || "")) {
+            preencherHtmlDetalhesOS(osRemota);
+          }
+        })
+        .withFailureHandler(function(erro) {
+          // Se já mostramos cache/resumo, não apagamos uma interface funcional.
+          if (!dadosIniciais && conteudo) {
+            conteudo.innerHTML =
+              "<p style='color:#ff5252; text-align:center;'>" +
+              "Erro ao carregar detalhes: " +
+              escaparHTML(erro && erro.message ? erro.message : erro) +
+              "</p>";
+          }
+        })
+        .buscarDetalhesOS(numero);
+    }
+
+    function preencherHtmlDetalhesOS(os) {
+      var dtAbertura = os.dataAbertura || os.data || "-";
+      var dtEncaminhamento = os.dataEncaminhamento || os.dataDesignacao || "-";
+      var dtInicio = os.dataInicio || os.dataAtendimento || "-";
+      var dtFim = os.dataFim || os.dataConclusao || os.dataFechamento || "-";
+      var osEncoded = escaparJSString(os.os);
+
+      var html = '<div class="campo">📋 <b>OS:</b> ' + escaparHTML(os.os) + '</div>' +
+        '<div class="campo">📌 <b>Status:</b> ' + escaparHTML(os.status) + '</div>' +
+        '<div class="campo">🏪 <b>Loja:</b> ' + escaparHTML(os.loja) + '</div>' +
+        '<div class="campo">🧩 <b>Setor:</b> ' + escaparHTML(valorTexto(os.setor, "-")) + '</div>' +
+        '<div class="campo">🖥️ <b>Equipamento:</b> ' + escaparHTML(valorTexto(os.equipamento, "-")) + '</div>' +
+        '<div class="secaoDatas">' +
+          '<h4>⏰ Histórico de Datas e Horários</h4>' +
+          '<div class="gridDatas">' +
+            '<div class="itemData"><small>📅 Abertura</small><b>' + escaparHTML(dtAbertura) + '</b></div>' +
+            '<div class="itemData"><small>📤 Encaminhamento</small><b>' + escaparHTML(dtEncaminhamento) + '</b></div>' +
+            '<div class="itemData"><small>🚀 Início</small><b>' + escaparHTML(dtInicio) + '</b></div>' +
+            '<div class="itemData"><small>🏁 Fim</small><b>' + escaparHTML(dtFim) + '</b></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="campo">⚠️ <b>Problema:</b><br><br>' + escaparHTML(valorTexto(os.problema, "-")) + '</div>';
+
+      if (os.foto && os.foto !== "" && os.foto !== "-") {
+        var imagemAbertura = urlImagemSegura(obterLinkDriveThumbnail(os.foto));
+        if (imagemAbertura) {
+          html += '<div class="campo"><b>📷 Foto do Problema</b><br><br>' +
+            '<img src="' + escaparHTML(imagemAbertura) + '" onclick="abrirImagem(this.src)" style="width:150px;height:150px;object-fit:cover;border-radius:8px;cursor:pointer;display:block;margin:auto;" alt="Foto do problema"></div>';
+        }
+      }
+
+      if (os.fotosManutencao && os.fotosManutencao.length) {
+        var arrFotos = Array.isArray(os.fotosManutencao) ? os.fotosManutencao : os.fotosManutencao.toString().split("\n");
+        html += '<div class="campo"><b>📸 Evidências</b><br><br><div style="display:flex;flex-wrap:wrap;gap:8px;">';
+        arrFotos.forEach(function (link) {
+          var imagem = urlImagemSegura(obterLinkDriveThumbnail(link));
+          if (imagem) {
+            html += '<img src="' + escaparHTML(imagem) + '" onclick="abrirImagem(this.src)" style="width:100px;height:100px;object-fit:cover;border-radius:6px;cursor:pointer;" alt="Evidência da manutenção">';
+          }
+        });
+        html += '</div></div>';
+      }
+
+      html += '<div class="campo">👤 <b>Responsável:</b> ' + escaparHTML(valorTexto(os.responsavel, "-")) + '</div>' +
+        '<div class="campo">👨‍🔧 <b>Técnico:</b> ' + escaparHTML(valorTexto(os.tecnico, "Não designado")) + '</div>' +
+        '<div class="campo">📦 <b>Materiais Utilizados:</b><br><br>' + escaparHTML(valorTexto(os.materiais, "Nenhum")) + '</div>' +
+        '<div class="campo">📝 <b>Observações:</b><br><br>' + escaparHTML(valorTexto(os.observacoesManutencao || os.observacoes, "-")) + '</div>';
+
+      if (os.checklist) {
+        var respostasValidasHTML = "";
+        var dadosChecklist = os.checklist;
+
+        if (typeof dadosChecklist === 'string') {
+          try { dadosChecklist = JSON.parse(dadosChecklist); } catch(e) {}
+        }
+
+        if (Array.isArray(dadosChecklist)) {
+          dadosChecklist.forEach(function(item) {
+            if (item && typeof item === 'object') {
+              var pergunta = item.pergunta || item.key || item.label || Object.keys(item)[0];
+              var resposta = item.resposta || item.value || (pergunta ? item[pergunta] : null);
+              if (pergunta && resposta !== null && resposta !== undefined && resposta.toString().trim() !== "") {
+                respostasValidasHTML += '<div style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px;">✔️ <b>' + escaparHTML(pergunta) + ':</b> ' + escaparHTML(resposta) + '</div>';
+              }
+            } else if (item && typeof item === 'string' && item.trim() !== "") {
+              respostasValidasHTML += '<div style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px;">✔️ ' + escaparHTML(item) + '</div>';
+            }
+          });
+        } else if (dadosChecklist && typeof dadosChecklist === 'object') {
+          for (var chave in dadosChecklist) {
+            if (dadosChecklist.hasOwnProperty(chave)) {
+              var val = dadosChecklist[chave];
+              if (val !== null && val !== undefined && val.toString().trim() !== "" && typeof val !== 'object') {
+                respostasValidasHTML += '<div style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px;">✔️ <b>' + escaparHTML(chave) + ':</b> ' + escaparHTML(val) + '</div>';
+              } else if (val && typeof val === 'object') {
+                var subP = val.pergunta || chave;
+                var subR = val.resposta || val.value || "";
+                if (subR.toString().trim() !== "") {
+                  respostasValidasHTML += '<div style="padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px;">✔️ <b>' + escaparHTML(subP) + ':</b> ' + escaparHTML(subR) + '</div>';
+                }
+              }
+            }
+          }
+        }
+
+        if (respostasValidasHTML !== "") {
+          html += '<div class="campo"><b>📋 Checklist e Respostas Adicionais do Setor:</b><div style="background:#252525; padding:10px; border-radius:8px; margin-top:8px; border:1px solid var(--border-color); max-height: 200px; overflow-y: auto;">' + respostasValidasHTML + '</div></div>';
+        }
+      }
+
+      document.getElementById("conteudoDetalhes").innerHTML = html;
+
+      var botoesHtml = "";
+      var statusUpper = (os.status || "").toUpperCase();
+
+      if (statusUpper.includes("FECHADO")) {
+        botoesHtml += '<button class="btnReabrirModal" onclick="reabrirOSWeb(decodificarJSString(\'' + osEncoded + '\'))">❌ Reabrir OS</button>';
+      } else if (statusUpper.includes("REJEITADO")) {
+        botoesHtml += '<button class="btnReabrirModal" onclick="reabrirOSWeb(decodificarJSString(\'' + osEncoded + '\'))">❌ Reabrir OS</button>';
+      } else {
+        var tecnicoAtual = (os.tecnico && os.tecnico !== "Não designado") ? os.tecnico : "";
+        botoesHtml += '<button class="btnConcluirModal" onclick="abrirModalConcluirPainel(decodificarJSString(\'' + osEncoded + '\'), decodificarJSString(\'' + escaparJSString(tecnicoAtual) + '\'))">✅ Concluir OS</button>';
+        botoesHtml += '<button class="btnRejeitarModal" onclick="rejeitarOSWeb(decodificarJSString(\'' + osEncoded + '\'))">🟣 Rejeitar OS</button>';
+      }
+      document.getElementById("botoesAcaoDetalhes").innerHTML = botoesHtml;
+    }
+
+    function abrirModalConcluirPainel(osNum, tecnicoAtual) {
+      document.getElementById("concluirManutencao").value = "";
+      document.getElementById("concluirObs").value = "";
+      
+      var btnSalvar = document.getElementById("btnSalvarConclusao");
+      btnSalvar.style.display = "block";
+      btnSalvar.disabled = false;
+      btnSalvar.innerText = "Salvar e Concluir OS";
+
+      document.getElementById("modalConcluirPainel").style.display = "flex";
+      
+      document.getElementById("listaTecnicosConcluir").innerHTML = "<div style='color:var(--text-sub); font-size:12px; text-align:center;'>Carregando técnicos...</div>";
+
+      google.script.run
+        .withSuccessHandler(function(tecnicos) {
+          var html = "";
+          if (tecnicos && tecnicos.length > 0) {
+            tecnicos.forEach(function(nome) {
+              html += '<label style="display:flex; align-items:center; gap:8px; padding:4px 0; cursor:pointer; font-size:12px; color:white;">' +
+                      '<input type="checkbox" class="checkTecnicosConcluir" value="' + nome + '" style="width:14px; height:14px; accent-color:#66bb6a; cursor:pointer;"> ' +
+                      '<span>' + nome + '</span>' +
+                      '</label>';
+            });
+          } else {
+            html = "<div style='color:#ff5252; font-size:12px; text-align:center;'>Nenhum técnico encontrado nas Configurações.</div>";
+          }
+          document.getElementById("listaTecnicosConcluir").innerHTML = html;
+        })
+        .buscarTecnicosConfig();
+    }
+
+    function fecharModalConcluirPainel() {
+      document.getElementById("modalConcluirPainel").style.display = "none";
+    }
+
+    function salvarConclusaoPainel() {
+      var checks = document.querySelectorAll(".checkTecnicosConcluir:checked");
+      if (checks.length === 0) {
+        alert("Selecione pelo menos um técnico responsável.");
+        return;
+      }
+
+      var tecnicosArr = [];
+      checks.forEach(function(c) { tecnicosArr.push(c.value); });
+
+      var manutencao = document.getElementById("concluirManutencao").value.trim();
+      var obs = document.getElementById("concluirObs").value.trim();
+
+      if (!manutencao) {
+        alert("Preencha a manutenção realizada.");
+        return;
+      }
+
+      var btnSalvar = document.getElementById("btnSalvarConclusao");
+      btnSalvar.style.display = "none";
+      
+      var avisoSalvando = document.getElementById("avisoSalvandoDinamico");
+      if (!avisoSalvando) {
+        avisoSalvando = document.createElement("div");
+        avisoSalvando.id = "avisoSalvandoDinamico";
+        avisoSalvando.style.cssText = "text-align:center; padding:12px; font-weight:bold; color:var(--primary); font-size:14px; background:var(--bg-input); border-radius:8px; margin-top:10px;";
+        btnSalvar.parentNode.appendChild(avisoSalvando);
+      }
+      avisoSalvando.innerText = "⏳ Salvando e Concluindo OS...";
+      avisoSalvando.style.display = "block";
+
+      google.script.run
+        .withSuccessHandler(function(sucesso) {
+          if (avisoSalvando) avisoSalvando.style.display = "none";
+          if (sucesso) {
+            atualizarStatusLocalOS(osDetalheAtual, "🟢 FECHADO");
+            fecharModalConcluirPainel();
+            fecharModal();
+            sincronizarDadosEmSegundoPlano();
+            alert("Ordem de Serviço concluída e PDF gerado com sucesso!");
+          } else {
+            alert("Erro ao concluir OS.");
+            btnSalvar.style.display = "block";
+          }
+        })
+        .withFailureHandler(function(err){ 
+          if (avisoSalvando) avisoSalvando.style.display = "none";
+          alert("Erro: " + err.message); 
+          btnSalvar.style.display = "block";
+        })
+        .concluirOSPainel(osDetalheAtual, tecnicosArr, manutencao, obs);
+    }
+
+    function reabrirOSWeb(numero) {
+      if (!confirm("Tem certeza que deseja reabrir esta Ordem de Serviço?")) return;
+
+      google.script.run
+        .withSuccessHandler(function(sucesso) {
+          if (sucesso) {
+            atualizarStatusLocalOS(numero, "🔴 ABERTO");
+            fecharModal();
+            sincronizarDadosEmSegundoPlano();
+            alert("Ordem de Serviço reaberta com sucesso!");
+          } else {
+            alert("Erro ao reabrir OS.");
+          }
+        })
+        .withFailureHandler(function(err){ alert("Erro: " + err.message); })
+        .reabrirOSPainel(numero);
+    }
+
+    function rejeitarOSWeb(numero) {
+
+  // Remove modal anterior caso exista
+  var modalExistente =
+    document.getElementById("modalMotivoRejeicao");
+
+  if (modalExistente) {
+    modalExistente.remove();
+  }
+
+
+  // ==================================================
+  // CRIA O MODAL
+  // ==================================================
+
+  var modal =
+    document.createElement("div");
+
+  modal.id = "modalMotivoRejeicao";
+
+  modal.style.cssText = `
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000000 !important;
+  `;
+
+
+  modal.innerHTML = `
+    <div style="
+      width: 90%;
+      max-width: 500px;
+      background: var(--bg-card, #1e1e1e);
+      border: 1px solid var(--border-color, #444);
+      border-radius: 12px;
+      padding: 20px;
+      box-sizing: border-box;
+      box-shadow: 0 10px 40px rgba(0,0,0,.45);
+    ">
+
+      <div style="
+        font-size: 18px;
+        font-weight: bold;
+        color: #ab47bc;
+        margin-bottom: 8px;
+      ">
+        🟣 Rejeitar Ordem de Serviço
+      </div>
+
+      <div style="
+        font-size: 13px;
+        color: var(--text-sub, #aaa);
+        margin-bottom: 16px;
+      ">
+        Informe o motivo da rejeição da OS
+        <strong style="color:white;">${numero}</strong>.
+      </div>
+
+
+      <label style="
+        display:block;
+        font-size:12px;
+        color:var(--text-sub, #aaa);
+        margin-bottom:6px;
+      ">
+        Motivo da rejeição *
+      </label>
+
+
+      <textarea
+        id="campoMotivoRejeicao"
+        maxlength="1000"
+        placeholder="Digite o motivo da rejeição..."
+        style="
+          width:100%;
+          min-height:120px;
+          box-sizing:border-box;
+          resize:vertical;
+          padding:12px;
+          border-radius:8px;
+          border:1px solid var(--border-color, #444);
+          background:var(--bg-input, #111);
+          color:var(--text-main, #fff);
+          font-family:inherit;
+          font-size:13px;
+          outline:none;
+        "
+      ></textarea>
+
+
+      <div style="
+        display:flex;
+        justify-content:flex-end;
+        gap:8px;
+        margin-top:16px;
+      ">
+
+        <button
+          type="button"
+          onclick="fecharModalMotivoRejeicao()"
+          style="
+            border:0;
+            border-radius:7px;
+            padding:9px 16px;
+            background:#555;
+            color:white;
+            cursor:pointer;
+            font-weight:bold;
+          "
+        >
+          Cancelar
+        </button>
+
+
+        <button
+          type="button"
+          id="btnConfirmarRejeicao"
+          onclick="confirmarRejeicaoOS('${String(numero).replace(/'/g, "\\'")}')"
+          style="
+            border:0;
+            border-radius:7px;
+            padding:9px 16px;
+            background:#ab47bc;
+            color:white;
+            cursor:pointer;
+            font-weight:bold;
+          "
+        >
+          🟣 Salvar Rejeição
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+
+  // O modal de rejeição deve ficar SEMPRE acima do modal de detalhes.
+  // O modal principal usa z-index 999999/1000000; por isso este modal
+  // usa uma camada superior e é anexado diretamente ao body.
+  modal.style.zIndex = "2000000";
+  document.body.appendChild(modal);
+
+  // Garante que o modal de rejeição receba o foco e fique visualmente
+  // acima de qualquer outro modal aberto, sem precisar fechar os detalhes.
+  requestAnimationFrame(function() {
+    modal.style.display = "flex";
+  });
+
+  // Coloca o cursor automaticamente no campo
+  setTimeout(function() {
+
+    var campo =
+      document.getElementById(
+        "campoMotivoRejeicao"
+      );
+
+    if (campo) {
+      campo.focus();
+    }
+
+  }, 100);
+
+  // ESC fecha apenas a caixa de rejeição. O modal de detalhes permanece
+  // aberto por baixo, preservando o contexto da OS.
+  modal.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      fecharModalMotivoRejeicao();
+    }
+  });
+}
+function fecharModalMotivoRejeicao() {
+
+  var modal =
+    document.getElementById(
+      "modalMotivoRejeicao"
+    );
+
+  if (modal) {
+    modal.remove();
+  }
+}
+
+function confirmarRejeicaoOS(numero) {
+
+  var campo =
+    document.getElementById(
+      "campoMotivoRejeicao"
+    );
+
+  if (!campo) return;
+
+
+  var motivo =
+    campo.value.trim();
+
+
+  // Não permite salvar sem motivo
+  if (!motivo) {
+
+    alert(
+      "Informe o motivo da rejeição."
+    );
+
+    campo.focus();
+
+    return;
+  }
+
+
+  var botao =
+    document.getElementById(
+      "btnConfirmarRejeicao"
+    );
+
+
+  if (botao) {
+
+    botao.disabled = true;
+
+    botao.innerText =
+      "⏳ Salvando...";
+  }
+
+
+  google.script.run
+
+    .withSuccessHandler(function(sucesso) {
+
+      if (sucesso) {
+
+        fecharModalMotivoRejeicao();
+
+        fecharModal();
+
+        sincronizarDadosEmSegundoPlano();
+
+        alert(
+          "Ordem de Serviço rejeitada com sucesso!"
+        );
+
+      } else {
+
+        alert(
+          "Erro ao rejeitar OS."
+        );
+
+        if (botao) {
+
+          botao.disabled = false;
+
+          botao.innerText =
+            "🟣 Salvar Rejeição";
+        }
+      }
+
+    })
+
+    .withFailureHandler(function(err) {
+
+      alert(
+        "Erro ao rejeitar OS: " +
+        (err && err.message
+          ? err.message
+          : err)
+      );
+
+      if (botao) {
+
+        botao.disabled = false;
+
+        botao.innerText =
+          "🟣 Salvar Rejeição";
+      }
+
+    })
+
+    .rejeitarOSPainel(
+      numero,
+      motivo
+    );
+}
+
+    function abrirDesignacao(numero) {
+      pausarAutoRefresh();
+      osAtual = numero;
+
+      document.getElementById("listaTecnicos").innerHTML = "<div style='text-align:center; padding: 20px; color: var(--primary); font-weight: bold;'>Carregando técnicos...</div>";
+      document.getElementById("modalTecnico").style.display = "flex";
+
+      google.script.run
+        .withSuccessHandler(function (dados) {
+          window.dadosOSDesignacao = dados;
+          var html = "";
+          if (dados && dados.tecnicos && dados.tecnicos.length > 0) {
+            dados.tecnicos.forEach(function (nome) {
+              html += '<label class="tecnicoItem">' +
+                    '<input type="checkbox" class="checkTecnico" value="' + escaparHTML(nome) + '"> ' +
+                    '<span>' + escaparHTML(nome) + '</span>' +
+                    '</label>';
+            });
+          } else {
+            html = "<p style='padding:12px; text-align:center; color:var(--text-sub);'>Nenhum técnico encontrado na aba CONFIGURAÇÕES.</p>";
+          }
+          document.getElementById("listaTecnicos").innerHTML = html;
+        })
+        .withFailureHandler(function (erro) {
+          document.getElementById("listaTecnicos").innerHTML = "<p style='color: #ff5252; text-align:center;'>Erro ao carregar técnicos: " + escaparHTML(erro && erro.message ? erro.message : erro) + "</p>";
+        })
+        .buscarDadosDesignacao(numero);
+    }
+
+    function salvarTecnico() {
+      var checks = document.querySelectorAll(".checkTecnico:checked");
+      if (checks.length === 0) {
+        alert("Selecione pelo menos um técnico.");
+        return;
+      }
+
+      var tecnicos = [];
+      checks.forEach(function (c) { tecnicos.push(c.value); });
+      var tecnicoTexto = tecnicos.join(", ");
+
+      var osInfo = window.dadosOSDesignacao || {};
+      var linkPortal = "https://script.google.com/macros/s/AKfycbwYkesiVjnNy6yXqVS87JrRUhYSLqUfsoMzizGs9X_qv3qKBoUiciWp2DronPPKEFzW/exec?os=" + (osInfo.os || osAtual);
+
+      var mensagem = "📝 *NOVA ORDEM DE SERVIÇO*\n\n" +
+        "📋 *OS:* " + (osInfo.os || osAtual) + "\n" +
+        "🏪 *Loja:* " + (osInfo.loja || "-") + "\n" +
+        "📌 *Setor:* " + (osInfo.setor || "-") + "\n" +
+        "🖥️ *Equipamento:* " + (osInfo.equipamento || "-") + "\n" +
+        "⚠️ *Problema:*\n" + (osInfo.problema || "-") + "\n\n" +
+        "👨‍🔧 *Técnico(s):*\n" + tecnicoTexto + "\n\n";
+        
+      if (osInfo.foto && osInfo.foto !== "" && osInfo.foto !== "-") {
+        mensagem += "📷 *Foto do Problema:*\n" + osInfo.foto + "\n\n";
+      }
+
+      mensagem += "🔗 *Portal do Técnico:*\n" + linkPortal;
+
+      document.getElementById("textoCopiar").value = mensagem;
+
+      google.script.run
+        .withSuccessHandler(function () {
+          fecharModalTecnico();
+          invalidarDetalheOSCache(osAtual);
+          document.getElementById("modalMensagem").style.display = "flex";
+          sincronizarDadosEmSegundoPlano();
+        })
+        .withFailureHandler(function (erro) {
+          alert("Erro ao designar técnico: " + erro.message);
+        })
+        .designarTecnicoPainel(osAtual, tecnicoTexto);
+    }
+
+    function copiarTexto() {
+      var campoTexto = document.getElementById("textoCopiar");
+      campoTexto.select();
+      campoTexto.setSelectionRange(0, campoTexto.value.length);
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(campoTexto.value)
+          .then(function() { alert("Mensagem copiada com sucesso!"); })
+          .catch(function() {
+            try {
+              document.execCommand("copy");
+              alert("Mensagem copiada com sucesso!");
+            } catch (e) {
+              alert("Não foi possível copiar automaticamente. Selecione e copie a mensagem manualmente.");
+            }
+          });
+      } else {
+        try {
+          document.execCommand("copy");
+          alert("Mensagem copiada com sucesso!");
+        } catch (e) {
+          alert("Não foi possível copiar automaticamente. Selecione e copie a mensagem manualmente.");
+        }
+      }
+    }
+
+    function fecharModal() {
+      document.getElementById("modalDetalhes").style.display = "none";
+      osDetalheAtual = null;
+      iniciarAutoRefresh();
+    }
+    function fecharModalTecnico() {
+      document.getElementById("modalTecnico").style.display = "none";
+      iniciarAutoRefresh();
+    }
+    function fecharModalMensagem() {
+      document.getElementById("modalMensagem").style.display = "none";
+      iniciarAutoRefresh();
+    }
+    function fecharImagem() {
+      document.getElementById("modalImagem").style.display = "none";
+    }
+
+    function abrirImagem(url) {
+      document.getElementById("imagemAmpliada").src = url;
+      document.getElementById("modalImagem").style.display = "flex";
+    }
+
+    function pesquisarOS() {
+      renderizarTabelaOS(obterListaOSFiltrada());
+    }
+
+    function iniciarAutoRefresh() {
+      if (!autoRefreshTimer) {
+        autoRefreshTimer = setInterval(function () {
+          sincronizarDadosEmSegundoPlano();
+        }, 20000);
+      }
+    }
+
+    function pausarAutoRefresh() {
+      if (autoRefreshTimer) {
+        clearInterval(autoRefreshTimer);
+        autoRefreshTimer = null;
+      }
+    }
+
+    window.onload = function () {
+      try {
+        window.__sgmDetalhesCache = {};
+      } catch (e) {}
+
+      carregarLogo();
+      iniciarWidgetTempoReal();
+      carregarLojasGlobais();
+
+      // Primeira pintura e sincronização acontecem sem bloquear os cliques.
+      sincronizarDadosEmSegundoPlano();
+      iniciarAutoRefresh();
+    }
+
+    function gerar() {
+      gerarRelatorio();
+    }
+  </script>
+
+</body>
+</html>
